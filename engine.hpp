@@ -90,3 +90,46 @@ struct BodyDef
         edges.clear();
     }
 };
+
+class Sandbox
+{
+private:
+    std::vector<Body> bodys;
+
+    void updateBodyPoints(Body *b, float dt)
+    {
+        for(int i=0; i<b->points_count; i++)
+        {
+            Vec2 temp = b->points[i].position;
+            b->points[i].position = b->points[i].position + 
+                                    (b->points[i].position - b->points[i].last_position)*dt + 
+                                    b->points[i].acceleration*dt*dt;
+            b->points[i].last_position = temp;
+        }
+    }
+
+public:
+    Vec2 acceleration;
+
+    Sandbox() {}
+
+    Sandbox(Vec2 acceleration_): acceleration(acceleration_) {}
+
+    void addBody(Body b)
+    {
+        bodys.push_back(b);
+    }
+
+    const std::vector<Body> *getBodys()
+    {
+        return &bodys;
+    }
+
+    void update(float time)
+    {
+        for(int i=0; i<bodys.size(); i++)
+            updateBodyPoints(&bodys[i], time);
+    }
+
+    ~Sandbox() {}
+};

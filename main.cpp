@@ -9,7 +9,7 @@ inline void glVertexVec2(Vec2 v)
 }
 
 
-void drawBody(Body *b)
+void drawBody(const Body *b)
 {
     glBegin(GL_LINES);
     for(int i=0; i<b->points_count-1; i++)
@@ -37,7 +37,8 @@ int main()
     bdef.addEdge(2, 3);
     bdef.addEdge(3, 0);
 
-    Body b = bdef.createBody();
+    Sandbox world(Vec2(0.0, -1.0));
+    world.addBody(bdef.createBody());
 
     sf::RenderWindow window(sf::VideoMode(700, 700), "");
     window.setFramerateLimit(60);
@@ -51,7 +52,9 @@ int main()
         }
         window.clear();
 
-        drawBody(&b);
+        glColor3f(1.0, 1.0, 1.0);
+        for(int i=0; i<world.getBodys()->size(); i++)
+            drawBody(&(world.getBodys()->at(i)));
 
         window.display();
         usleep(1000);
