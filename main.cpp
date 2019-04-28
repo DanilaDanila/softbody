@@ -37,6 +37,8 @@ int main()
     bdef.addEdge(2, 3);
     bdef.addEdge(3, 0);
 
+    bdef.setBodyType(BODY_DYNAMIC);
+
     Sandbox world(Vec2(0.0, -1.0));
     world.addBody(bdef.createBody());
 
@@ -51,6 +53,8 @@ int main()
             if(event.type == sf::Event::Closed) window.close();
         }
         window.clear();
+
+        world.update(0.03);
 
         glColor3f(1.0, 1.0, 1.0);
         for(int i=0; i<world.getBodys()->size(); i++)

@@ -3,12 +3,14 @@
 #include "vec2.hpp"
 #include <vector>
 
+#define BODY_STATIC 0
+#define BODY_DYNAMIC 1
+
 struct Point
 {
     Vec2 position;
     Vec2 last_position;
     Vec2 acceleration;
-    float mass;
 
     Point() {}
 
@@ -47,6 +49,10 @@ struct Body
     int edges_count;
     Edge *edges;
 
+    int type;
+
+    float rigidity;
+
     Body() {}
 
     ~Body() {}
@@ -54,12 +60,21 @@ struct Body
 
 struct BodyDef
 {
+private:
     std::vector<Point> points;
     std::vector<Vec2> edges;
 
+    int body_type = BODY_STATIC;
+
+    float rigidity = 1.0;
+
+public:
     Body createBody()
     {
         Body new_body;
+
+        new_body.type = body_type;
+        new_body.rigidity = rigidity;
         
         new_body.points_count = points.size();
         new_body.points = new Point[new_body.points_count];
@@ -89,6 +104,16 @@ struct BodyDef
         points.clear();
         edges.clear();
     }
+
+    void setBodyType(int body_type_)
+    {
+        body_type = body_type_;
+    }
+
+    void setRigidity(float rigidity_)
+    {
+        rigidity = rigidity_;
+    }
 };
 
 class Sandbox
@@ -98,14 +123,42 @@ private:
 
     void updateBodyPoints(Body *b, float dt)
     {
+        if(b->type == BODY_STATIC) return;
+
         for(int i=0; i<b->points_count; i++)
         {
-            Vec2 temp = b->points[i].position;
-            b->points[i].position = b->points[i].position + 
-                                    (b->points[i].position - b->points[i].last_position)*dt + 
-                                    b->points[i].acceleration*dt*dt;
-            b->points[i].last_position = temp;
+            Point &p = b->points[i];
+            Vec2 temp = p.position;
+            p.position = p.position + (p.position - p.last_position)*dt + p.acceleration*dt*dt;
+            p.last_position = temp;
         }
+    }
+
+    void updateBodyEdges(Body *b)
+    {
+        if(b->type == BODY_STATIC) return;
+
+        for(int i=0; i<b->edges_count; i++)
+        {
+            Edge &e = b->edges[i];
+
+            Vec2 connection = e.p0->position - e.p1->position;
+            float connection_len = connection.len();
+
+            float diff = connection_len - e.length;
+            connection.normalize();
+
+            e.p0->position = e.p0->position + connection*diff*0.5f*b->rigidity;
+            e.p1->position = e.p1->position - connection*diff*0.5f*b->rigidity;
+        }
+    }
+
+    void applyAcc(Body *b)
+    {
+        if(b->type == BODY_STATIC) return;
+
+        for(int i=0; i<b->points_count; i++)
+            b->points[i].acceleration = acceleration;
     }
 
 public:
@@ -125,10 +178,15 @@ public:
         return &bodys;
     }
 
-    void update(float time)
+    void update(float _time)
     {
         for(int i=0; i<bodys.size(); i++)
-            updateBodyPoints(&bodys[i], time);
+        {
+            applyAcc(&bodys[i]);
+
+            updateBodyPoints(&bodys[i], _time);
+            updateBodyEdges(&bodys[i]);
+        }
     }
 
     ~Sandbox() {}
