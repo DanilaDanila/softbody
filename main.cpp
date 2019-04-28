@@ -1,6 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <GL/gl.h>
 #include <unistd.h>
+#include "vec2.hpp"
+
+inline void glVertexVec2(Vec2 v)
+{
+    glVertex2f(v.x, v.y);
+}
 
 int main()
 {
@@ -16,10 +22,13 @@ int main()
         }
         window.clear();
 
+        Vec2 center(0.0, 0.0);
+        Vec2 line_to(0.4, 0.7);
+
         glBegin(GL_LINES);
         glColor3f(1.0, 1.0, 1.0);
-        glVertex2f(0.0, 0.0);
-        glVertex2f(0.5, 0.5);
+        glVertexVec2(center);
+        glVertexVec2(center+line_to);
         glEnd();
 
         window.display();
