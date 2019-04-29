@@ -52,7 +52,7 @@ int main()
 {
     float size = 0.2;
     float shift_x = -0.5, shift_y = 0.2;
-    float speed_shift = 0.003;
+    float speed_shift = 0.01;
 
     BodyDef bdef;
     bdef.addPoint(Vec2(shift_x, shift_y), Vec2(shift_x - speed_shift, shift_y));
@@ -65,8 +65,9 @@ int main()
     bdef.addEdge(2, 3);
     bdef.addEdge(3, 0);
     bdef.addEdge(0, 2);
+    bdef.addEdge(1, 3);
 
-    bdef.setRigidity(1.0);
+    bdef.setRigidity(0.2);
 
     bdef.setBodyType(BODY_DYNAMIC);
 
@@ -127,9 +128,19 @@ int main()
 
         window.clear();
 
-        glColor3f(1.0, 1.0, 1.0);
+        Vec2 wind;
+
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) wind = wind + Vec2(-1.0, 0.0);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) wind = wind + Vec2(1.0, 0.0);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) wind = wind + Vec2(0.0, 1.0);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) wind = wind + Vec2(0.0, -1.0);
+        wind = wind*1.2;
+
+        world.addWind(wind);
+
         world.update(time_);
 
+        glColor3f(1.0, 1.0, 1.0);
         for(int i=0; i<world.getBodys()->size(); i++)
             drawBody(&(world.getBodys()->at(i)));
 

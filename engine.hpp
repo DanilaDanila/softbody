@@ -154,6 +154,8 @@ class Sandbox
 private:
     std::vector<Body> bodys;
 
+    Vec2 wind;
+
     Point updatePoint(Point *p, float dt)
     {
         Point result;
@@ -190,12 +192,12 @@ private:
         }
     }
 
-    void applyAcc(Body *b)
+    void applyAcc(Body *b, Vec2 acc)
     {
         if(b->type == BODY_STATIC) return;
 
         for(int i=0; i<b->points_count; i++)
-            b->points[i].acceleration = acceleration;
+            b->points[i].acceleration = acc;
     }
 
     Vec2 getNormalToBody(Vec2 point, Body *b)
@@ -253,12 +255,17 @@ public:
     {
         for(int i=0; i<bodys.size(); i++)
         {
-            applyAcc(&bodys[i]);
+            applyAcc(&bodys[i], acceleration + wind);
 
             updateBodyPoints(&bodys[i], _time);
             updateBodyEdges(&bodys[i]);
             updateCollisions(i, _time);
         }
+    }
+
+    void addWind(Vec2 v)
+    {
+        wind = v;
     }
 
     ~Sandbox() {}
