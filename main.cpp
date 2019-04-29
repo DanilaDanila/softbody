@@ -52,18 +52,21 @@ int main()
 {
     float size = 0.2;
     float shift_x = -0.05, shift_y = 0.2;
+    float speed_shift = 0.003;
 
     BodyDef bdef;
-    bdef.addPoint(Vec2(shift_x, shift_y), Vec2(shift_x - 0.001, shift_y));
-    bdef.addPoint(Vec2(shift_x + size, shift_y), Vec2(shift_x + size - 0.001, shift_y));
-    bdef.addPoint(Vec2(shift_x + size, shift_y + size), Vec2(shift_x + size - 0.001, shift_y + size));
-    bdef.addPoint(Vec2(shift_x, shift_y + size), Vec2(shift_x - 0.001, shift_y + size));
+    bdef.addPoint(Vec2(shift_x, shift_y), Vec2(shift_x - speed_shift, shift_y));
+    bdef.addPoint(Vec2(shift_x + size, shift_y), Vec2(shift_x + size - speed_shift, shift_y));
+    bdef.addPoint(Vec2(shift_x + size, shift_y + size), Vec2(shift_x + size - speed_shift, shift_y + size));
+    bdef.addPoint(Vec2(shift_x, shift_y + size), Vec2(shift_x - speed_shift, shift_y + size));
 
-    bdef.addEdge(0, 1);
-    bdef.addEdge(1, 2);
-    bdef.addEdge(2, 3);
-    bdef.addEdge(3, 0);
-    bdef.addEdge(0, 2);
+    //bdef.addEdge(0, 1);
+    //bdef.addEdge(1, 2);
+    //bdef.addEdge(2, 3);
+    //bdef.addEdge(3, 0);
+    //bdef.addEdge(0, 2);
+
+    bdef.setRigidity(0.8);
 
     bdef.setBodyType(BODY_DYNAMIC);
 
@@ -72,12 +75,40 @@ int main()
 
     bdef.clear();
     bdef.addPoint(Vec2(-1.0, -1.0));
-    bdef.addPoint(Vec2(-1.0, 0.0));
-    bdef.addPoint(Vec2(0.0, 0.0));
-    bdef.addPoint(Vec2(0.0, -1.0));
+    bdef.addPoint(Vec2(-1.0, -0.9));
+    bdef.addPoint(Vec2(1.0, -0.9));
+    bdef.addPoint(Vec2(1.0, -1.0));
 
     bdef.setBodyType(BODY_STATIC);
     world.addBody(bdef.createBody());
+    bdef.clear();
+
+    bdef.addPoint(Vec2(-1.0, 1.0));
+    bdef.addPoint(Vec2(-1.0, 0.9));
+    bdef.addPoint(Vec2(1.0, 0.9));
+    bdef.addPoint(Vec2(1.0, 1.0));
+
+    bdef.setBodyType(BODY_STATIC);
+    world.addBody(bdef.createBody());
+    bdef.clear();
+
+    bdef.addPoint(Vec2(-1.0, -1.0));
+    bdef.addPoint(Vec2(-0.9, -1.0));
+    bdef.addPoint(Vec2(-0.9, 1.0));
+    bdef.addPoint(Vec2(-1.0, 1.0));
+
+    bdef.setBodyType(BODY_STATIC);
+    world.addBody(bdef.createBody());
+    bdef.clear();
+
+    bdef.addPoint(Vec2(1.0, -1.0));
+    bdef.addPoint(Vec2(0.9, -1.0));
+    bdef.addPoint(Vec2(0.9, 1.0));
+    bdef.addPoint(Vec2(1.0, 1.0));
+
+    bdef.setBodyType(BODY_STATIC);
+    world.addBody(bdef.createBody());
+    bdef.clear();
 
     sf::RenderWindow window(sf::VideoMode(700, 700), "");
     window.setFramerateLimit(60);
