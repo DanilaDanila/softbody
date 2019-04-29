@@ -25,7 +25,7 @@ void drawBody(const Body *b)
 int main()
 {
     float size = 0.2;
-    float shift_x = 0.0, shift_y = 0.0;
+    float shift_x = -0.1, shift_y = 0.0;
 
     BodyDef bdef;
     bdef.addPoint(Vec2(0.0 + shift_x, 0.0 + shift_y));
@@ -43,6 +43,15 @@ int main()
     bdef.setBodyType(BODY_DYNAMIC);
 
     Sandbox world(Vec2(0.0, -1.0));
+    world.addBody(bdef.createBody());
+
+    bdef.clear();
+    bdef.addPoint(Vec2(-1.0, -1.0));
+    bdef.addPoint(Vec2(-1.0, 0.0));
+    bdef.addPoint(Vec2(0.0, 0.0));
+    bdef.addPoint(Vec2(0.0, -1.0));
+
+    bdef.setBodyType(BODY_STATIC);
     world.addBody(bdef.createBody());
 
     sf::RenderWindow window(sf::VideoMode(700, 700), "");

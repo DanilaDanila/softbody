@@ -53,6 +53,11 @@ Vec2 operator/(Vec2 v, float f)
     return Vec2(v.x/f, v.y/f);
 }
 
+float operator*(Vec2 v0, Vec2 v1)
+{
+    return v0.x*v1.x + v0.y*v1.y;
+}
+
 Vec2 normalToLine(Vec2 point, Vec2 line_begin, Vec2 line_end)
 {
     float A = (line_begin.y - line_end.y);

@@ -3,6 +3,8 @@
 #include "vec2.hpp"
 #include <vector>
 
+#include <iostream>
+
 #define BODY_STATIC 0
 #define BODY_DYNAMIC 1
 
@@ -58,6 +60,31 @@ struct Body
     ~Body() {}
 };
 
+bool isPointsOnSameSideOfLine(Vec2 p0, Vec2 p1, Vec2 line_beg, Vec2 line_end)
+{
+    Vec2 n0 = normalToLine(p0, line_beg, line_end);
+    Vec2 n1 = normalToLine(p1, line_beg, line_end);
+
+    return n0*n1 > 0;
+}
+
+bool isPointInsideBody(Vec2 p, Body *b)
+{
+    Vec2 b_center;
+    for(int i=0; i<b->points_count; i++)
+        b_center = b_center + b->points[i].position;
+    b_center = b_center/b->points_count;
+
+    for(int i=0; i<b->points_count-1; i++)
+        if(isPointsOnSameSideOfLine(p, b_center, b->points[i].position, b->points[i+1].position))
+            return true;
+
+    if(isPointsOnSameSideOfLine(p, b_center, b->points[0].position, b->points[b->points_count-1].position))
+        return true;
+
+    return false;
+}
+
 struct BodyDef
 {
 private:
@@ -103,6 +130,9 @@ public:
     {
         points.clear();
         edges.clear();
+
+        body_type = BODY_STATIC;
+        rigidity = 1.0;
     }
 
     void setBodyType(int body_type_)
@@ -121,17 +151,21 @@ class Sandbox
 private:
     std::vector<Body> bodys;
 
+    Point updatePoint(Point *p, float dt)
+    {
+        Point result;
+        result.position = p->position + (p->position - p->last_position)*dt + p->acceleration*dt*dt;
+        result.last_position = p->position;
+
+        return result;
+    }
+
     void updateBodyPoints(Body *b, float dt)
     {
         if(b->type == BODY_STATIC) return;
 
         for(int i=0; i<b->points_count; i++)
-        {
-            Point &p = b->points[i];
-            Vec2 temp = p.position;
-            p.position = p.position + (p.position - p.last_position)*dt + p.acceleration*dt*dt;
-            p.last_position = temp;
-        }
+            b->points[i] = updatePoint(&b->points[i], dt);
     }
 
     void updateBodyEdges(Body *b)
@@ -159,6 +193,16 @@ private:
 
         for(int i=0; i<b->points_count; i++)
             b->points[i].acceleration = acceleration;
+    }
+
+    void updateBodyPointsWithCollision(unsigned int body_num, unsigned int steps_count, float _time)
+    {
+        float dt = _time/steps_count;
+        for(int i=0; i<steps_count; i++)
+            for(int j=0; j<bodys[i].points_count; j++)
+            {
+               // Point after_update = updatePoint(bodys[i].points[i], dt);
+            }
     }
 
 public:
