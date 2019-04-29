@@ -2,6 +2,9 @@
 
 #include "vec2.hpp"
 #include <vector>
+#include <limits>
+
+#define inf std::numeric_limits<float>::infinity()
 
 #include <iostream>
 
@@ -115,9 +118,10 @@ public:
         return new_body;
     }
 
-    void addPoint(Vec2 v)
+    void addPoint(Vec2 pos, Vec2 last_pos = Vec2(inf, inf))
     {
-        points.push_back(Point(v, v, Vec2()));
+        if(last_pos.x == inf) last_pos = pos;
+        points.push_back(Point(pos, last_pos, Vec2()));
     }
 
     void addEdge(int point_num0, int point_num1)
@@ -153,7 +157,7 @@ private:
     Point updatePoint(Point *p, float dt)
     {
         Point result;
-        result.position = p->position + (p->position - p->last_position)*dt + p->acceleration*dt*dt;
+        result.position = p->position + (p->position - p->last_position) + p->acceleration*dt*dt;
         result.last_position = p->position;
 
         return result;
@@ -225,6 +229,15 @@ private:
             }
     }
 
+    void updateCollision(int body_num, float dt)
+    {
+        Body *b = &bodys[body_num];
+        for(int i=0; i<b->points_count; i++)
+        {
+            
+        }
+    }
+
 public:
     Vec2 acceleration;
 
@@ -248,8 +261,8 @@ public:
         {
             applyAcc(&bodys[i]);
 
-            //updateBodyPoints(&bodys[i], _time);
-            updateBodyPointsWithCollision(i, 1, _time);
+            updateBodyPoints(&bodys[i], _time);
+            //updateBodyPointsWithCollision(i, 1, _time);
             updateBodyEdges(&bodys[i]);
         }
     }
