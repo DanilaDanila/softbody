@@ -25,7 +25,7 @@ void drawBody(const Body *b)
 int main()
 {
     float size = 0.2;
-    float shift_x = -0.1, shift_y = 0.0;
+    float shift_x = -0.05, shift_y = 0.2;
 
     BodyDef bdef;
     bdef.addPoint(Vec2(0.0 + shift_x, 0.0 + shift_y));
@@ -66,9 +66,9 @@ int main()
         }
         window.clear();
 
+        glColor3f(1.0, 1.0, 1.0);
         world.update(0.03);
 
-        glColor3f(1.0, 1.0, 1.0);
         for(int i=0; i<world.getBodys()->size(); i++)
             drawBody(&(world.getBodys()->at(i)));
 

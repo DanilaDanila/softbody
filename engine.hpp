@@ -75,14 +75,13 @@ bool isPointInsideBody(Vec2 p, Body *b)
         b_center = b_center + b->points[i].position;
     b_center = b_center/b->points_count;
 
+    bool check = true;
+
     for(int i=0; i<b->points_count-1; i++)
-        if(isPointsOnSameSideOfLine(p, b_center, b->points[i].position, b->points[i+1].position))
-            return true;
+        check = check && (isPointsOnSameSideOfLine(p, b_center, b->points[i].position, b->points[i+1].position));
+    check = check && (isPointsOnSameSideOfLine(p, b_center, b->points[0].position, b->points[b->points_count-1].position));
 
-    if(isPointsOnSameSideOfLine(p, b_center, b->points[0].position, b->points[b->points_count-1].position))
-        return true;
-
-    return false;
+    return check;
 }
 
 struct BodyDef
@@ -197,11 +196,34 @@ private:
 
     void updateBodyPointsWithCollision(unsigned int body_num, unsigned int steps_count, float _time)
     {
+        if(bodys[body_num].type == BODY_STATIC) return;
+
         float dt = _time/steps_count;
         for(int i=0; i<steps_count; i++)
-            for(int j=0; j<bodys[i].points_count; j++)
+            for(int j=0; j<bodys[body_num].points_count; j++)
             {
-               // Point after_update = updatePoint(bodys[i].points[i], dt);
+                Point after_update = updatePoint(&bodys[body_num].points[j], dt);
+
+                bool check = true;
+                for(int k=0; k<bodys.size(); k++)
+                    if(!check) break;
+                    else
+                    if(k != body_num)
+                    {
+                        if(isPointInsideBody(after_update.position, &bodys[k]))
+                            check = false;
+
+                        /*
+                        for(int z=0; z<bodys[k].points_count; z++)
+                            if(isPointInsideBody(bodys[k].points[z].position, &bodys[body_num]))
+                            {
+                                check = false;
+                                break;
+                            }
+                        */
+                    }
+
+                if(check) bodys[body_num].points[j] = after_update;
             }
     }
 
@@ -228,8 +250,9 @@ public:
         {
             applyAcc(&bodys[i]);
 
-            updateBodyPoints(&bodys[i], _time);
+            //updateBodyPoints(&bodys[i], _time);
             updateBodyEdges(&bodys[i]);
+            updateBodyPointsWithCollision(i, 1, _time);
         }
     }
 
