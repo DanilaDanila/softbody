@@ -213,14 +213,12 @@ private:
                         if(isPointInsideBody(after_update.position, &bodys[k]))
                             check = false;
 
-                        /*
                         for(int z=0; z<bodys[k].points_count; z++)
                             if(isPointInsideBody(bodys[k].points[z].position, &bodys[body_num]))
                             {
                                 check = false;
                                 break;
                             }
-                        */
                     }
 
                 if(check) bodys[body_num].points[j] = after_update;
@@ -251,8 +249,8 @@ public:
             applyAcc(&bodys[i]);
 
             //updateBodyPoints(&bodys[i], _time);
-            updateBodyEdges(&bodys[i]);
             updateBodyPointsWithCollision(i, 1, _time);
+            updateBodyEdges(&bodys[i]);
         }
     }
 
