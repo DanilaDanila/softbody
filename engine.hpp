@@ -212,11 +212,9 @@ private:
         return result;
     }
 
-    void updateCollisions(int body_num, float _time, unsigned int steps_count)
+    void updateCollisions(int body_num, float _time)
     {
         if(bodys[body_num].type == BODY_STATIC) return;
-
-        float dt = _time/steps_count;
 
         Body *b = &bodys[body_num];
         for(int i=0; i<b->points_count; i++)
@@ -258,8 +256,8 @@ public:
             applyAcc(&bodys[i]);
 
             updateBodyPoints(&bodys[i], _time);
-            updateCollisions(i, _time, 2);
-            //updateBodyEdges(&bodys[i]);
+            updateBodyEdges(&bodys[i]);
+            updateCollisions(i, _time);
         }
     }
 
