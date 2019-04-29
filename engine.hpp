@@ -146,10 +146,10 @@ private:
             float connection_len = connection.len();
 
             float diff = connection_len - e.length;
-            connection.normalize();
+            connection = connection.normalize();
 
-            e.p0->position = e.p0->position + connection*diff*0.5f*b->rigidity;
-            e.p1->position = e.p1->position - connection*diff*0.5f*b->rigidity;
+            e.p0->position = e.p0->position - connection*diff*0.5f*b->rigidity;
+            e.p1->position = e.p1->position + connection*diff*0.5f*b->rigidity;
         }
     }
 
