@@ -229,13 +229,40 @@ private:
             }
     }
 
-    void updateCollision(int body_num, float dt)
+    Vec2 getNormalToBody(Vec2 point, Body *b)
     {
+        Vec2 result = normalToLine(point, b->points[0].position, b->points[b->points_count-1].position);
+
+        for(int i=0; i<b->points_count-1; i++)
+        {
+            Vec2 current = normalToLine(point, b->points[i].position, b->points[i+1].position);
+
+            result = (current.len() < result.len())?current:result;
+        }
+
+        return result;
+    }
+
+    void updateCollisions(int body_num, float _time, unsigned int steps_count)
+    {
+        if(bodys[body_num].type == BODY_STATIC) return;
+
+        float dt = _time/steps_count;
+
         Body *b = &bodys[body_num];
         for(int i=0; i<b->points_count; i++)
-        {
-            
-        }
+            for(int j=0; j<bodys.size(); j++)
+                if(i != j)
+                    if(isPointInsideBody(b->points[i].position, &bodys[j]))
+                    {
+                        Vec2 n_curr = getNormalToBody(b->points[i].position, &bodys[j]);
+                        Vec2 n_old = getNormalToBody(b->points[i].last_position, &bodys[j]);
+
+                        b->points[i].position = b->points[i].position + 2.0*n_curr;
+                        b->points[i].last_position = b->points[i].last_position + 2.0*n_old;
+
+                        break;
+                    }
     }
 
 public:
@@ -263,6 +290,7 @@ public:
 
             updateBodyPoints(&bodys[i], _time);
             //updateBodyPointsWithCollision(i, 1, _time);
+            updateCollisions(i, _time, 2);
             updateBodyEdges(&bodys[i]);
         }
     }

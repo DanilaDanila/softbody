@@ -55,6 +55,15 @@ int main()
 
     BodyDef bdef;
     bdef.addPoint(Vec2(shift_x, shift_y), Vec2(shift_x - 0.001, shift_y));
+    bdef.addPoint(Vec2(shift_x + size, shift_y), Vec2(shift_x + size - 0.001, shift_y));
+    bdef.addPoint(Vec2(shift_x + size, shift_y + size), Vec2(shift_x + size - 0.001, shift_y + size));
+    bdef.addPoint(Vec2(shift_x, shift_y + size), Vec2(shift_x - 0.001, shift_y + size));
+
+    bdef.addEdge(0, 1);
+    bdef.addEdge(1, 2);
+    bdef.addEdge(2, 3);
+    bdef.addEdge(3, 0);
+    bdef.addEdge(0, 2);
 
     bdef.setBodyType(BODY_DYNAMIC);
 
@@ -82,7 +91,7 @@ int main()
         {
             if(event.type == sf::Event::Closed) window.close();
         }
-        time_ = clock_.getElapsedTime().asMilliseconds()/500.0;
+        time_ = clock_.getElapsedTime().asMilliseconds()/1000.0;
         clock_.restart();
 
         window.clear();
